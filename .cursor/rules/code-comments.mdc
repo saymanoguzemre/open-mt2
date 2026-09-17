@@ -1,0 +1,15 @@
+---
+description: Rules for production code comments
+alwaysApply: true
+---
+
+# Code Comments
+
+- Keep production code comments concise and focused on domain intent or non-obvious behavior.
+- Do not add comments describing the AI's reasoning, implementation decisions, or thought process.
+- Do not explain obvious code or describe code line-by-line.
+- Do not add long comments to justify a simple implementation.
+- Prefer self-explanatory code, meaningful names, and proper abstractions over comments.
+- Only add a comment when it provides information that cannot reasonably be inferred from the code itself.
+- Avoid speculative comments about why existing code or the original implementation behaves a certain way.
+- When modifying existing code, preserve the existing comment style and avoid introducing unnecessary comments.

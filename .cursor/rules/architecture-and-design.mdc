@@ -1,0 +1,204 @@
+---
+
+description: Preserve and follow the existing project architecture, design patterns, abstractions, and coding conventions
+alwaysApply: true
+-----------------
+
+# Architecture and Design
+
+When modifying or adding code, first understand and follow the existing architecture, design patterns, abstractions, and coding conventions of the project.
+
+The existing codebase is the primary source of architectural truth. Do not impose a generic architecture, pattern, or "best practice" on the project when an established project-specific approach already exists.
+
+## Before Implementing
+
+For any non-trivial change:
+
+1. Inspect the relevant existing implementation.
+2. Search the codebase for existing implementations with the same or similar responsibility.
+3. Identify which component or layer owns the responsibility.
+4. Follow the established pattern used by similar code.
+5. Make the smallest change that correctly fits the existing architecture.
+
+Before introducing a new abstraction, pattern, service, manager, helper, interface, utility, or framework, first search the codebase for an existing implementation with the same or similar responsibility.
+
+Prefer reusing, extending, or adapting an existing abstraction when appropriate rather than creating a parallel solution.
+
+Do not immediately modify the first file where the requested behavior appears. First determine where the responsibility belongs.
+
+## Existing Architecture
+
+* Respect the existing project structure and layer boundaries.
+* Keep responsibilities in the layer that owns them.
+* Follow the existing dependency direction.
+* Do not introduce dependencies between layers that violate the established architecture.
+* Do not move business logic into infrastructure, networking, controllers, handlers, repositories, or other layers merely because it is convenient.
+* Do not bypass existing abstractions to access lower-level implementations directly.
+* Follow existing patterns for communication between layers and components.
+
+## Existing Patterns
+
+* Reuse established design patterns and abstractions.
+* Follow existing patterns for dependency injection, validation, error handling, logging, persistence, caching, messaging, authorization, and service communication.
+* When similar functionality already exists, use it as the reference implementation.
+* Match the surrounding code's structure, naming, visibility, lifecycle, and dependency management.
+* Do not introduce a new pattern when an existing project pattern can solve the problem.
+
+## Responsibility and Separation of Concerns
+
+Before adding logic to a class or module, determine whether that component actually owns the responsibility.
+
+* Keep transport/protocol handling separate from business rules.
+* Keep business rules separate from infrastructure concerns.
+* Keep persistence concerns inside the established persistence abstractions.
+* Keep application orchestration inside the established application/service layer.
+* Do not place domain-specific behavior in unrelated components simply because they are convenient entry points.
+* Prefer domain-appropriate abstractions over special cases in unrelated layers.
+
+For example, if a handler receives a command and an existing command manager/system is responsible for commands, command-specific behavior should normally be implemented through that command system rather than hardcoded into the handler.
+
+## Reuse Before Creating
+
+Before creating something new, search for:
+
+* Existing services with similar responsibilities
+* Existing interfaces or abstractions
+* Existing base classes
+* Existing managers
+* Existing helpers or utilities
+* Existing validation mechanisms
+* Existing repositories or data-access abstractions
+* Existing DTOs/models
+* Existing error-handling patterns
+* Existing authorization mechanisms
+* Existing caching mechanisms
+* Existing messaging/event patterns
+* Similar features elsewhere in the codebase
+
+If an existing implementation is close but not exactly suitable, prefer extending or adapting it when that remains consistent with the architecture.
+
+Do not create duplicate abstractions that solve essentially the same problem.
+
+## Avoid Over-Engineering
+
+Keep implementations as simple as the existing architecture allows.
+
+Do not introduce:
+
+* New layers without a clear architectural reason
+* New abstractions for a single trivial use case
+* Interfaces with only one implementation when the project does not use that pattern for similar components
+* Factories when direct construction or the existing dependency-injection pattern is sufficient
+* Managers/services/helpers merely to move a few lines of code
+* Generic frameworks or utility layers for isolated functionality
+* New third-party dependencies when existing project functionality is sufficient
+* Design patterns solely because they are considered "clean architecture" or "best practice"
+
+Prefer the simplest solution that is consistent with the existing codebase.
+
+## Preserve Existing Behavior
+
+Unless the requested change explicitly requires it:
+
+* Do not change unrelated behavior.
+* Do not perform unrelated refactoring.
+* Do not rename unrelated classes, methods, properties, or files.
+* Do not change public APIs unnecessarily.
+* Do not replace working implementations with theoretically "better" alternatives.
+* Preserve existing error-handling and validation behavior.
+* Preserve existing logging conventions.
+* Preserve existing async/concurrency patterns.
+* Preserve existing dependency-injection conventions.
+
+A feature or bug fix should result in a focused change rather than a broad cleanup.
+
+## Consistency Over Generic Best Practices
+
+When a generic programming recommendation conflicts with an established project convention, follow the project convention unless there is a concrete technical reason to change it.
+
+Do not refactor existing code merely because it differs from a preferred style.
+
+When a genuine architectural problem is discovered, explain the issue and propose the architectural change rather than silently introducing a new architecture.
+
+## Comments
+
+* Keep production comments concise.
+* Do not add comments describing AI reasoning, implementation decisions, or thought processes.
+* Do not explain obvious code.
+* Do not describe code line-by-line.
+* Do not add long comments to justify simple implementations.
+* Prefer clear names and structure over comments.
+* Add a comment only when it explains a non-obvious domain rule or behavior that cannot reasonably be expressed through the code itself.
+* Preserve the existing comment style when modifying existing code.
+
+## Refactoring
+
+Only refactor code that is directly relevant to the requested change unless the user explicitly asks for broader refactoring.
+
+When refactoring:
+
+1. Identify the existing behavior and dependencies.
+2. Search for all relevant usages.
+3. Preserve externally observable behavior unless a behavior change is requested.
+4. Keep the refactoring consistent with existing architectural patterns.
+5. Avoid combining unrelated refactoring with feature work.
+
+Do not use a feature request as an excuse to redesign an unrelated part of the system.
+
+## When the Existing Architecture Is Unclear
+
+If the correct architectural location is not obvious:
+
+1. Search for similar functionality in the codebase.
+2. Inspect the callers and consumers of the relevant component.
+3. Inspect neighboring modules and their responsibilities.
+4. Determine the convention used by the majority of similar implementations.
+5. Follow that established convention.
+
+Do not invent a new architecture simply because the correct existing pattern was not immediately found.
+
+If there are genuinely multiple conflicting architectural patterns in the codebase, prefer the pattern used by the most recent or most relevant implementations and mention the ambiguity when explaining the change.
+
+## When to Ask Before Coding
+
+Do not ask for confirmation for routine implementation decisions that can be determined from the existing codebase.
+
+Use the existing architecture, similar implementations, naming conventions, and established patterns to make reasonable decisions independently.
+
+Ask the user before coding when:
+
+* The requested change has multiple materially different architectural approaches and the existing codebase does not establish a clear preference.
+* The change would require introducing a new architectural layer, major abstraction, design pattern, framework, or third-party dependency.
+* The requested behavior conflicts with an existing architectural rule or established project convention.
+* The change would require changing a public API, database schema, external contract, protocol, or persisted data format in a potentially breaking way.
+* The requested behavior is ambiguous in a way that could lead to materially different business behavior.
+* Implementing the request would require changing unrelated components or behavior beyond the apparent scope of the request.
+* Existing implementations contain conflicting patterns and there is no clear precedent for which one should be followed.
+* A requested change could cause data loss, destructive migration, irreversible state changes, or other significant operational consequences.
+* The implementation requires choosing a business rule that cannot be inferred from existing code or documentation.
+
+Do not ask merely because:
+
+* There is a small implementation detail to decide.
+* The existing codebase already provides a clear pattern.
+* Several equivalent implementations are possible.
+* A reasonable default can be inferred from surrounding code.
+* The change is a routine extension of an existing feature.
+* The agent can inspect the codebase and determine the answer itself.
+
+When asking a question, explain the specific decision that is ambiguous and present the relevant options briefly. Do not ask broad questions such as "How would you like me to implement this?" when the codebase provides enough information to determine the implementation.
+
+When there is no material ambiguity, proceed with the implementation.
+
+
+## Implementation Principle
+
+The default approach should be:
+
+**Understand → Search → Reuse → Extend → Implement**
+
+not:
+
+**Find the nearest file → Invent an abstraction → Patch the nearest file**
+
+The goal is to make new code feel like it was written by the existing project team, not to introduce a different architectural style.
