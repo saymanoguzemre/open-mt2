@@ -91,4 +91,14 @@ describe('MathUtil', () => {
             }
         });
     });
+
+    describe('calcDuration', () => {
+        it('leaves duration unchanged at the neutral speed of 100', () => {
+            expect(MathUtil.calcDuration(100, 58_000)).to.equal(58_000);
+        });
+
+        it('doubles duration when speed is 0', () => {
+            expect(MathUtil.calcDuration(0, 58_000)).to.equal(116_000);
+        });
+    });
 });

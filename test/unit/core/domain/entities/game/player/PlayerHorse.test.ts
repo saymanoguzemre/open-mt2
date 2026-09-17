@@ -23,6 +23,7 @@ const config: any = {
                 mpPerIqPoint: 1,
                 initialAttackSpeed: 100,
                 initialMovementSpeed: 100,
+                initialCastingSpeed: 100,
                 defensePerHtPoint: 1,
                 attackPerDXPoint: 1,
                 attackPerIQPoint: 1,
@@ -46,6 +47,7 @@ const createFactoryDeps = (mobManager?: any) => ({
         clearTimersByOwner: () => {},
     } as any,
     mobManager: mobManager ?? ({ getMobProto: () => undefined } as any),
+    skillManager: { getSkillProto: () => undefined } as any,
 });
 
 const createFactory = (mobManager?: any) => ({

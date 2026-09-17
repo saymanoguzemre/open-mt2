@@ -41,6 +41,7 @@ const makePoints = ({
             attackPerIqPoint: 1,
             baseAttackSpeed: 100,
             baseMovementSpeed: 100,
+            baseCastingSpeed: 100,
         } as any,
         {
             config: { MAX_POINTS: 90, MAX_LEVEL: 99, POINTS_PER_LEVEL: 3 } as any,

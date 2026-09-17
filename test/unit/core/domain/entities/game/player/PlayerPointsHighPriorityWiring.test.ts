@@ -40,6 +40,7 @@ const makePoints = () => {
             attackPerIqPoint: 1,
             baseAttackSpeed: 100,
             baseMovementSpeed: 100,
+            baseCastingSpeed: 100,
         } as any,
         {
             config: { MAX_POINTS: 90, MAX_LEVEL: 99, POINTS_PER_LEVEL: 3 } as any,
@@ -53,8 +54,31 @@ const makePoints = () => {
 describe('PlayerPoints previously-unwired high priority points', () => {
     // These used to be no-ops: the class had the field + constructor plumbing, but no points.set()
     // registration, so addPoint()/getPoint() silently did nothing for every skill/item targeting one.
+    it('resets CASTING_SPEED to the job base so skill cooldowns are not doubled by calcDuration', () => {
+        const points = makePoints();
+
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(0);
+
+        points.calcPointsAndResetValues();
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(100);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, 25);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(125);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, -10);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(115);
+    });
+
+    it('caps CASTING_SPEED at MAX_TINY, matching ATTACK_SPEED / MOVE_SPEED', () => {
+        const points = makePoints();
+        points.calcPointsAndResetValues();
+
+        points.addPoint(PointsEnum.CASTING_SPEED, 200);
+
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(255);
+    });
+
     const simplePoints: Array<PointsEnum> = [
-        PointsEnum.CASTING_SPEED,
         PointsEnum.BOW_DISTANCE,
         PointsEnum.ATTBONUS_HUMAN,
         PointsEnum.ATTBONUS_ANIMAL,

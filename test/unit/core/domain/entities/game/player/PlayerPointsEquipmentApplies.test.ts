@@ -40,6 +40,7 @@ const makePoints = () => {
             attackPerIqPoint: 1,
             baseAttackSpeed: 100,
             baseMovementSpeed: 100,
+            baseCastingSpeed: 100,
         } as any,
         {
             config: { MAX_POINTS: 90, MAX_LEVEL: 99, POINTS_PER_LEVEL: 3 } as any,
@@ -134,6 +135,17 @@ describe('PlayerPoints equip/unequip bonuses (PlayerApplies phase 1)', () => {
             points.addPoint(point, 15);
             expect(points.getPoint(point)).to.equal(15);
         });
+    });
+
+    it('APPLY_CAST_SPEED adds on top of the job base after calcPointsAndResetValues', () => {
+        const points = makePoints();
+        points.calcPointsAndResetValues();
+
+        points.addPoint(PointsEnum.CASTING_SPEED, 15);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(115);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, -15);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(100);
     });
 
     it('MAX_STAMINA is addable now, with no recompute to wipe it (no calcMaxStamina exists)', () => {

@@ -28,6 +28,7 @@ export type Config = {
                 mpPerIqPoint: number;
                 initialAttackSpeed: number;
                 initialMovementSpeed: number;
+                initialCastingSpeed: number;
                 defensePerHtPoint: number;
                 attackPerStPoint: number;
                 attackPerDXPoint: number;

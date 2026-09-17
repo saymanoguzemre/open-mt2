@@ -15,6 +15,8 @@ import MathUtil from '@/core/domain/util/MathUtil';
 import { Skill } from '@/core/domain/entities/game/skill/Skill';
 import Player from '@/core/domain/entities/game/player/Player';
 import { PlayerSkill } from '@/core/domain/entities/game/player/delegate/PlayerSkill';
+import { AuraOfWordSkill } from '@/core/domain/entities/game/skill/active/warrior/body/AuraOfWordSkill';
+import { WarriorSubJobEnum } from '@/core/enum/SubJobEnum';
 
 const RANK = {
     NORMAL: 0,
@@ -1439,6 +1441,80 @@ describe('PlayerSkill', () => {
                 .getCalls()
                 .some((call) => call.args[0] === PointsEnum.HEALTH && call.args[1] < 0);
             expect(selfHealthChange, 'the caster must never take Flame Explosion damage from casting it').to.be.false;
+        });
+    });
+
+    describe('useSkill - Aura of Sword cooldown starts on use (not after the buff)', () => {
+        const MASTER_LEVEL = 20;
+        const PROTO_COOLDOWN_MS = 58_000;
+
+        function createAuraPlayer(castingSpeed: number): Player {
+            return createPlayer({
+                isDead: sinon.stub().returns(false),
+                getPrivateShop: sinon.stub().returns(undefined),
+                isAffectByFlag: sinon.stub().returns(false),
+                isWarrior: sinon.stub().returns(true),
+                getSkillGroup: sinon.stub().returns(WarriorSubJobEnum.BODY),
+                getWeaponValues: sinon.stub().returns({
+                    physic: { min: 0, max: 0, bonus: 0 },
+                    magic: { min: 0, max: 0, bonus: 0 },
+                }),
+                getLevel: sinon.stub().returns(30),
+                getAttack: sinon.stub().returns(0),
+                getHorseLevel: sinon.stub().returns(0),
+                getVirtualId: sinon.stub().returns(1),
+                getAttackRating: sinon.stub().returns(0),
+                getDefense: sinon.stub().returns(0),
+                addAffect: sinon.stub(),
+                getPoint: sinon
+                    .stub()
+                    .callsFake((point: PointsEnum) => (point === PointsEnum.CASTING_SPEED ? castingSpeed : 999999)),
+            });
+        }
+
+        it('allows recast after the 58s proto cooldown when CASTING_SPEED is 100, even if the affect is still flagged', () => {
+            let nowMs = 1_000_000;
+            sandbox.stub(performance, 'now').callsFake(() => nowMs);
+
+            const player = createAuraPlayer(100);
+            (player.isAffectByFlag as SinonStub).callsFake(
+                (flag: AffectBitsTypeEnum) => flag === AffectBitsTypeEnum.AURA_OF_SWORD,
+            );
+
+            const playerSkill = new PlayerSkill({
+                player,
+                skillManager: createSkillManager(new AuraOfWordSkill()),
+                skills: [],
+            });
+            setSkillState(playerSkill, SkillEnum.AURA_OF_SWORD, { level: MASTER_LEVEL });
+
+            expect(playerSkill.useSkill(SkillEnum.AURA_OF_SWORD)).to.equal(true);
+
+            nowMs += PROTO_COOLDOWN_MS;
+
+            expect(playerSkill.useSkill(SkillEnum.AURA_OF_SWORD)).to.equal(true);
+            expect((player.addAffect as SinonStub).callCount).to.equal(2);
+        });
+
+        it('rejects recast at 58s when CASTING_SPEED is 0 (calcDuration doubles the cooldown to 116s)', () => {
+            let nowMs = 1_000_000;
+            sandbox.stub(performance, 'now').callsFake(() => nowMs);
+
+            const player = createAuraPlayer(0);
+            const playerSkill = new PlayerSkill({
+                player,
+                skillManager: createSkillManager(new AuraOfWordSkill()),
+                skills: [],
+            });
+            setSkillState(playerSkill, SkillEnum.AURA_OF_SWORD, { level: MASTER_LEVEL });
+
+            expect(playerSkill.useSkill(SkillEnum.AURA_OF_SWORD)).to.equal(true);
+
+            nowMs += PROTO_COOLDOWN_MS;
+            expect(playerSkill.useSkill(SkillEnum.AURA_OF_SWORD)).to.equal(false);
+
+            nowMs += PROTO_COOLDOWN_MS;
+            expect(playerSkill.useSkill(SkillEnum.AURA_OF_SWORD)).to.equal(true);
         });
     });
 });

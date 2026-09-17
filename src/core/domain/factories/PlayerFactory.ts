@@ -135,6 +135,7 @@ export class PlayerFactory {
                 mpPerIqPoint: config.jobs[className].common.mpPerIqPoint,
                 baseAttackSpeed: config.jobs[className].common.initialAttackSpeed,
                 baseMovementSpeed: config.jobs[className].common.initialMovementSpeed,
+                baseCastingSpeed: config.jobs[className].common.initialCastingSpeed,
                 baseHealth: config.jobs[className].common.initialHp,
                 baseMana: config.jobs[className].common.initialMp,
                 defensePerHtPoint: config.jobs[className].common.defensePerHtPoint,

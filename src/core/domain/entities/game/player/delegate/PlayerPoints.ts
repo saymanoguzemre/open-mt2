@@ -41,7 +41,7 @@ export class PlayerPoints extends Points {
     private attackGrade: number;
     private moveSpeed: number;
     private defense: number;
-    private readonly castingSpeed: number;
+    private castingSpeed: number;
     private magicAttGrade: number;
     private magicDefGrade: number;
     private readonly empirePoint: number;
@@ -179,6 +179,7 @@ export class PlayerPoints extends Points {
     private readonly attackPerIqPoint: number;
     private readonly baseMovementSpeed: number;
     private readonly baseAttackSpeed: number;
+    private readonly baseCastingSpeed: number;
 
     private readonly player: Player;
 
@@ -333,6 +334,7 @@ export class PlayerPoints extends Points {
             attackPerIqPoint,
             baseAttackSpeed,
             baseMovementSpeed,
+            baseCastingSpeed,
         }: {
             level?: number;
             experience?: number;
@@ -483,6 +485,7 @@ export class PlayerPoints extends Points {
             attackPerIqPoint: number;
             baseMovementSpeed: number;
             baseAttackSpeed: number;
+            baseCastingSpeed: number;
         },
         {
             config,
@@ -646,6 +649,7 @@ export class PlayerPoints extends Points {
         this.availableSkillPoints = availableSkillPoints;
         this.baseAttackSpeed = baseAttackSpeed;
         this.baseMovementSpeed = baseMovementSpeed;
+        this.baseCastingSpeed = baseCastingSpeed;
 
         this.config = config;
         this.experienceManager = experienceManager;
@@ -922,7 +926,7 @@ export class PlayerPoints extends Points {
         // targets one of these (see issue: Aura of Sword not raising attack, same root cause class).
         this.points.set(PointsEnum.CASTING_SPEED, {
             get: () => this.castingSpeed,
-            add: (value) => this.addCommonPoint(value, 'castingSpeed'),
+            add: (value) => this.addCommonPoint(value, 'castingSpeed', MathUtil.MAX_TINY),
         });
         this.points.set(PointsEnum.BOW_DISTANCE, {
             get: () => this.bowDistance,
@@ -1291,6 +1295,7 @@ export class PlayerPoints extends Points {
         this.calcPoints();
         this.resetAttackSpeed();
         this.resetMoveSpeed();
+        this.resetCastingSpeed();
     }
 
     calcPoints() {
@@ -1560,6 +1565,10 @@ export class PlayerPoints extends Points {
 
     private resetAttackSpeed() {
         this.attackSpeed = this.baseAttackSpeed;
+    }
+
+    private resetCastingSpeed() {
+        this.castingSpeed = this.baseCastingSpeed;
     }
 
     getGivenStatusPoints() {

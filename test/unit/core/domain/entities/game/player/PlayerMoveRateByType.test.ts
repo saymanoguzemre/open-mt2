@@ -26,6 +26,7 @@ const config: any = {
                 mpPerIqPoint: 0,
                 initialAttackSpeed: 100,
                 initialMovementSpeed: 100,
+                initialCastingSpeed: 100,
                 defensePerHtPoint: 1,
                 attackPerDXPoint: 1,
                 attackPerIQPoint: 1,
@@ -78,6 +79,7 @@ const createPlayer = (): Player => {
                 removeAllTimersFromOwner: () => {},
             } as any,
             mobManager: { getMobProto: () => undefined } as any,
+            skillManager: { getSkillProto: () => undefined } as any,
         },
     );
     player.setConnection({ send: () => {}, setState: () => {} } as any);
@@ -91,7 +93,7 @@ describe('Player move rate by movement type', () => {
         // The reported bug: clicking repeatedly while walking. Each MOVE packet
         // carries the whole remaining path, so charging them saturated the
         // window and then refused even a single step.
-        const accepted = [];
+        const accepted: boolean[] = [];
         for (let i = 1; i <= 10; i++) {
             accepted.push(player.isMoveAllowed(START_X + i * 400, START_Y, MovementTypeEnum.MOVE));
         }

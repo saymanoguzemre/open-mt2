@@ -18,7 +18,7 @@ export class StrongBodySkill extends ActiveSkill {
     public readonly range: number = 0;
     public readonly maxHit: number = 1;
     public readonly damageType: SkillDamageTypeEnum = SkillDamageTypeEnum.NORMAL;
-    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY, SkillFlagsEnum.TOGGLE]);
+    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY]);
     public readonly affects: Set<SkillAffectEnum> = new Set([SkillAffectEnum.STRONG_BODY]);
     public readonly applies: Set<SkillApplies> = new Set([
         {
@@ -40,8 +40,8 @@ export class StrongBodySkill extends ActiveSkill {
         return 1;
     }
 
-    calculateCooldown(): number {
-        return 0;
+    calculateCooldown(context: SkillCalcContext): number {
+        return 63 + 90 * context.skillLevel;
     }
 
     calculateManaCost(context: SkillCalcContext): number {

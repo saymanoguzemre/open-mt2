@@ -36,6 +36,7 @@ const createPlayer = ({ animation }: { animation?: Animation } = { animation: RU
                     mpPerIqPoint: 1,
                     initialAttackSpeed: 100,
                     initialMovementSpeed: 100,
+                    initialCastingSpeed: 100,
                 },
             },
         },
@@ -79,6 +80,7 @@ const createPlayer = ({ animation }: { animation?: Animation } = { animation: RU
             questManager: {} as any,
             eventTimerManager: {} as any,
             mobManager: {} as any,
+            skillManager: {} as any,
         },
     );
 

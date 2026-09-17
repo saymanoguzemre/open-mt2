@@ -18,7 +18,7 @@ export class AuraOfWordSkill extends ActiveSkill {
     public readonly range: number = 0;
     public readonly maxHit: number = 1;
     public readonly damageType: SkillDamageTypeEnum = SkillDamageTypeEnum.NORMAL;
-    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY, SkillFlagsEnum.TOGGLE]);
+    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY]);
     public readonly affects: Set<SkillAffectEnum> = new Set([SkillAffectEnum.AURA_OF_SWORD]);
     public readonly applies: Set<SkillApplies> = new Set([
         {
@@ -34,8 +34,8 @@ export class AuraOfWordSkill extends ActiveSkill {
         return 1;
     }
 
-    calculateCooldown(): number {
-        return 0;
+    calculateCooldown(context: SkillCalcContext): number {
+        return 33 + 50 * context.skillLevel;
     }
 
     calculateManaCost(context: SkillCalcContext): number {
