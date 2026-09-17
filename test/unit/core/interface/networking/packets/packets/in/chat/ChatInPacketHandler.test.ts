@@ -61,12 +61,32 @@ describe('ChatInPacketHandler', () => {
         expect(commandManagerMock.execute.calledOnce).to.be.true;
     });
 
-    it('should drop the message when the player is flooding, commands included (issue #67)', async () => {
+    it('should still send a command to CommandManager when the player is flooding', async () => {
         playerMock.isChatAllowed.returns(false);
 
         await chatInPacketHandler.execute(connectionMock, packetMock);
 
-        expect(commandManagerMock.execute.called, 'the command never ran').to.be.false;
+        expect(commandManagerMock.execute.calledOnce).to.be.true;
+        expect(connectionMock.close.called, 'the connection stays open').to.be.false;
+    });
+
+    it('should send COMMAND-typed chat to CommandManager', async () => {
+        packetMock.getMessageType = () => ChatMessageTypeEnum.COMMAND;
+
+        await chatInPacketHandler.execute(connectionMock, packetMock);
+
+        expect(commandManagerMock.execute.calledOnce).to.be.true;
+        expect(chatServiceMock.talk.called).to.be.false;
+    });
+
+    it('should drop ordinary chat when the player is flooding (issue #67)', async () => {
+        packetMock.getMessage = () => 'hello there';
+        playerMock.isChatAllowed.returns(false);
+
+        await chatInPacketHandler.execute(connectionMock, packetMock);
+
+        expect(chatServiceMock.talk.called).to.be.false;
+        expect(commandManagerMock.execute.called).to.be.false;
         expect(connectionMock.close.called, 'the connection stays open').to.be.false;
     });
 

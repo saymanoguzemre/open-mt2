@@ -15,4 +15,8 @@ export default class StatCommand extends Command {
     static getExample() {
         return '/stat <ht, st, dx, it> <number>';
     }
+
+    static requiresChatAllowed() {
+        return false;
+    }
 }

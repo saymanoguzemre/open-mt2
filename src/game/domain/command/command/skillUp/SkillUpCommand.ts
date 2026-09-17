@@ -15,4 +15,8 @@ export default class SkillUpCommand extends Command {
     static getExample() {
         return '/skillup idx';
     }
+
+    static requiresChatAllowed() {
+        return false;
+    }
 }

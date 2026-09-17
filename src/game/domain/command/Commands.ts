@@ -68,6 +68,7 @@ export type CommandConstructor<T extends Command> = {
     getName(): string;
     getDescription(): string;
     getExample(): string;
+    requiresChatAllowed(): boolean;
 };
 
 export type CommandMapValue<T extends Command> = {

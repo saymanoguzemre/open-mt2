@@ -5,6 +5,7 @@ import GameConnection from '@/game/interface/networking/GameConnection';
 import { ChatMessageTypeEnum } from '@/core/enum/ChatMessageTypeEnum';
 import CommandManager from '@/game/app/command/CommandManager';
 import ChatService from '@/game/app/service/ChatService';
+import Player from '@/core/domain/entities/game/player/Player';
 
 export default class ChatInPacketHandler extends PacketHandler<ChatInPacket> {
     private readonly logger: Logger;
@@ -45,27 +46,26 @@ export default class ChatInPacketHandler extends PacketHandler<ChatInPacket> {
         const message = packet.getMessage();
         const messageType = packet.getMessageType();
 
-        // Dropped silently, the way the original handles a client talking too
-        // fast: closing the connection would punish a burst of legitimate
-        // typing, and a spam module gets nothing out of either.
-        if (!player.isChatAllowed()) {
-            this.logger.debug(`[ChatInPacketHandler] Chat flood from ${player.getName()}, message dropped`);
-            return;
-        }
-
         switch (messageType) {
             case ChatMessageTypeEnum.NORMAL:
                 this.logger.debug(`[ChatInPacketHandler] NORMAL CHAT: ${message}`);
                 if (message.length > 1 && message.startsWith('/')) {
                     await this.commandManager.execute({ message, player });
-                    return;
+                    break;
                 }
 
+                if (!this.allowChat(player)) return;
                 this.chatService.talk(player, message);
-
                 break;
+
+            case ChatMessageTypeEnum.COMMAND:
+                this.logger.debug(`[ChatInPacketHandler] COMMAND CHAT: ${message}`);
+                await this.commandManager.execute({ message, player });
+                break;
+
             case ChatMessageTypeEnum.SHOUT:
                 this.logger.debug(`[ChatInPacketHandler] SHOUT CHAT: ${message}`);
+                if (!this.allowChat(player)) return;
 
                 if (!player.hasShoutLevel()) {
                     player.chat({
@@ -78,38 +78,46 @@ export default class ChatInPacketHandler extends PacketHandler<ChatInPacket> {
                 if (!player.isShoutAllowed()) return;
 
                 this.chatService.shout(player, message);
-
                 break;
-            case ChatMessageTypeEnum.COMMAND:
-                this.logger.debug(`[ChatInPacketHandler] COMMAND CHAT: ${message}`);
 
-                break;
             case ChatMessageTypeEnum.GROUP:
                 this.logger.debug(`[ChatInPacketHandler] GROUP CHAT: ${message}`);
+                if (!this.allowChat(player)) return;
 
                 player.chat({
                     messageType: ChatMessageTypeEnum.INFO,
                     message: '[SYSTEM] You are not in a party',
                 });
-
                 break;
+
             case ChatMessageTypeEnum.GUILD:
                 this.logger.debug(`[ChatInPacketHandler] GUILD CHAT: ${message}`);
+                if (!this.allowChat(player)) return;
 
                 player.chat({
                     messageType: ChatMessageTypeEnum.INFO,
                     message: '[SYSTEM] You are not in a guild',
                 });
-
                 break;
+
             case ChatMessageTypeEnum.INFO:
                 this.logger.debug(`[ChatInPacketHandler] INFO CHAT: ${message}`);
-
+                if (!this.allowChat(player)) return;
                 break;
 
             default:
                 this.logger.error(`[ChatInPacketHandler] INVALID CHAT: type: ${messageType}, message: ${message}`);
                 break;
         }
+    }
+
+    // Dropped silently, the way the original handles a client talking too
+    // fast: closing the connection would punish a burst of legitimate
+    // typing, and a spam module gets nothing out of either.
+    private allowChat(player: Player) {
+        if (player.isChatAllowed()) return true;
+
+        this.logger.debug(`[ChatInPacketHandler] Chat flood from ${player.getName()}, message dropped`);
+        return false;
     }
 }

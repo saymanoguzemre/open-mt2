@@ -33,6 +33,10 @@ export default abstract class Command {
         return '';
     }
 
+    static requiresChatAllowed(): boolean {
+        return true;
+    }
+
     isValid(): boolean {
         if (!this.validator) {
             throw new Error('Validator is not defined for this command');

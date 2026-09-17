@@ -716,9 +716,9 @@ export default class Player extends Character {
     }
 
     /**
-     * Rate limits every incoming chat packet, commands included. Only delivered
-     * messages count toward the window, so a rejected flood does not extend its
-     * own block; it is capped at the per-window maximum.
+     * Rate limits incoming chat. Only delivered messages count toward the
+     * window, so a rejected flood does not extend its own block; it is capped
+     * at the per-window maximum.
      */
     isChatAllowed(): boolean {
         const now = performance.now();
