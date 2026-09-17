@@ -137,6 +137,17 @@ describe('PlayerPoints equip/unequip bonuses (PlayerApplies phase 1)', () => {
         });
     });
 
+    it('APPLY_CAST_SPEED adds on top of the job base after calcPointsAndResetValues', () => {
+        const points = makePoints();
+        points.calcPointsAndResetValues();
+
+        points.addPoint(PointsEnum.CASTING_SPEED, 15);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(115);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, -15);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(100);
+    });
+
     it('MAX_STAMINA is addable now, with no recompute to wipe it (no calcMaxStamina exists)', () => {
         const points = makePoints();
 

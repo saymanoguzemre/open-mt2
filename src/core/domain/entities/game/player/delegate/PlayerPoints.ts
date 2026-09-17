@@ -41,7 +41,7 @@ export class PlayerPoints extends Points {
     private attackGrade: number;
     private moveSpeed: number;
     private defense: number;
-    private readonly castingSpeed: number;
+    private castingSpeed: number;
     private magicAttGrade: number;
     private magicDefGrade: number;
     private readonly empirePoint: number;
@@ -926,7 +926,7 @@ export class PlayerPoints extends Points {
         // targets one of these (see issue: Aura of Sword not raising attack, same root cause class).
         this.points.set(PointsEnum.CASTING_SPEED, {
             get: () => this.castingSpeed,
-            add: (value) => this.addCommonPoint(value, 'castingSpeed'),
+            add: (value) => this.addCommonPoint(value, 'castingSpeed', MathUtil.MAX_TINY),
         });
         this.points.set(PointsEnum.BOW_DISTANCE, {
             get: () => this.bowDistance,
@@ -1295,6 +1295,7 @@ export class PlayerPoints extends Points {
         this.calcPoints();
         this.resetAttackSpeed();
         this.resetMoveSpeed();
+        this.resetCastingSpeed();
     }
 
     calcPoints() {
