@@ -30,7 +30,8 @@ export default class CharacterPointsPacket extends PacketOut {
 
     pack() {
         for (let i = 0; i < 255; i++) {
-            this.bufferWriter.writeUint32LE(this.points[i]);
+            // Client point fields are 32-bit unsigned.
+            this.bufferWriter.writeUint32LE((this.points[i] ?? 0) >>> 0);
         }
         return this.bufferWriter.getBuffer();
     }
