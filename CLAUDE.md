@@ -43,12 +43,12 @@ container.register({
 
 ## Common contribution workflows
 
-The most repetitive workflows in the project have dedicated skills under `.claude/skills/`, invokable with `/skill-name`:
+The most repetitive workflows in the project have dedicated skills, invokable with `/skill-name`. Claude Code reads `.claude/skills/`; Cursor reads `.cursor/skills/` (same content):
 
-- **[add-packet](.claude/skills/add-packet/SKILL.md)** — create a new network packet (IN or OUT), register it, and document it.
-- **[add-command](.claude/skills/add-command/SKILL.md)** — create a new chat command (`/something`) in the game server.
-- **[add-quest](.claude/skills/add-quest/SKILL.md)** — create a new quest using the `@Quest`/`@Task` decorators.
-- **[testing-conventions](.claude/skills/testing-conventions/SKILL.md)** — unit and integration test conventions.
+- **add-packet** ([Claude](.claude/skills/add-packet/SKILL.md) / [Cursor](.cursor/skills/add-packet/SKILL.md)) — create a new network packet (IN or OUT), register it, and document it.
+- **add-command** ([Claude](.claude/skills/add-command/SKILL.md) / [Cursor](.cursor/skills/add-command/SKILL.md)) — create a new chat command (`/something`) in the game server.
+- **add-quest** ([Claude](.claude/skills/add-quest/SKILL.md) / [Cursor](.cursor/skills/add-quest/SKILL.md)) — create a new quest using the `@Quest`/`@Task` decorators.
+- **testing-conventions** ([Claude](.claude/skills/testing-conventions/SKILL.md) / [Cursor](.cursor/skills/testing-conventions/SKILL.md)) — unit and integration test conventions.
 
 Use these skills when working on those flows — they describe the exact order of steps and where a registration step is easy to forget (e.g. a packet created but never registered in `Packets.ts`).
 
