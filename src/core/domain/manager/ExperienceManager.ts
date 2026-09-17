@@ -20,7 +20,7 @@ export default class ExperienceManager {
 
     getNeededExperience(level: number) {
         if (level < 1 || level > this.config.MAX_LEVEL) return 0;
-        return this.expTable[level - 1];
+        return this.expTable[level - 1] ?? 0;
     }
 
     calculateExpToGive(player: Player, monster: Monster | Stone, exp: number) {

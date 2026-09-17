@@ -1319,20 +1319,29 @@ export class PlayerPoints extends Points {
     }
 
     private addExperience(value: number): void {
-        const validatedValue = MathUtil.toUnsignedNumber(value);
+        const amount = MathUtil.toNumber(value);
 
-        if (validatedValue < 0 || (this.level >= this.config.MAX_LEVEL && this.experience === 0)) return;
-
-        if (this.level >= this.config.MAX_LEVEL) {
-            this.experience = 0;
+        if (amount < 0) {
+            this.experience = Math.max(0, this.experience + amount);
             this.calcStatusPoints();
             return;
         }
 
         const expNeeded = this.experienceManager.getNeededExperience(this.level);
+        if (expNeeded <= 0) return;
 
-        if (this.experience + validatedValue >= expNeeded) {
-            const diff = this.experience + validatedValue - expNeeded;
+        if (this.level >= this.config.MAX_LEVEL) {
+            const before = this.experience;
+            this.experience = Math.min(this.experience + amount, expNeeded - 1);
+            this.applyExpProgress(before, expNeeded);
+            this.calcStatusPoints();
+            return;
+        }
+
+        if (amount === 0 && this.experience === 0) return;
+
+        if (this.experience + amount >= expNeeded) {
+            const diff = this.experience + amount - expNeeded;
             this.experience = diff;
             this.addLevel(1);
             this.calcStatusPoints();
@@ -1340,13 +1349,14 @@ export class PlayerPoints extends Points {
             return;
         }
 
-        const expPart = expNeeded / 4;
         const before = this.experience;
-        this.experience += validatedValue;
+        this.experience += amount;
+        this.applyExpProgress(before, expNeeded);
+    }
 
-        const beforePart = before / expPart;
-        const afterPart = this.experience / expPart;
-        const expSteps = Math.floor(afterPart) - Math.floor(beforePart);
+    private applyExpProgress(before: number, expNeeded: number): void {
+        const expPart = expNeeded / 4;
+        const expSteps = Math.floor(this.experience / expPart) - Math.floor(before / expPart);
 
         if (expSteps > 0) {
             this.health = this.maxHealth;
