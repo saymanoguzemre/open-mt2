@@ -251,6 +251,7 @@ export default class Player extends Character {
             attackPerIqPoint = 0,
             baseAttackSpeed = 0,
             baseMovementSpeed = 0,
+            baseCastingSpeed = 0,
             quickSlot,
             horseLevel = 0,
             horseHealth = 0,
@@ -298,6 +299,7 @@ export default class Player extends Character {
             attackPerIqPoint?: number;
             baseAttackSpeed?: number;
             baseMovementSpeed?: number;
+            baseCastingSpeed?: number;
             quickSlot?: Map<number, { type: number; position: number }>;
             horseLevel?: number;
             horseHealth?: number;
@@ -408,6 +410,7 @@ export default class Player extends Character {
                 attackPerIqPoint,
                 baseAttackSpeed,
                 baseMovementSpeed,
+                baseCastingSpeed,
             },
             {
                 config,
@@ -2685,6 +2688,7 @@ export default class Player extends Character {
             attackPerIqPoint,
             baseAttackSpeed,
             baseMovementSpeed,
+            baseCastingSpeed,
             quickSlot,
             horseLevel,
             horseHealth,
@@ -2732,6 +2736,7 @@ export default class Player extends Character {
             attackPerIqPoint: number;
             baseAttackSpeed: number;
             baseMovementSpeed: number;
+            baseCastingSpeed: number;
             quickSlot: Map<number, { type: QuickSlotTypeEnum; position: number }>;
             horseLevel?: number;
             horseHealth?: number;
@@ -2803,6 +2808,7 @@ export default class Player extends Character {
                 attackPerIqPoint,
                 baseAttackSpeed,
                 baseMovementSpeed,
+                baseCastingSpeed,
                 quickSlot,
                 horseLevel,
                 horseHealth,

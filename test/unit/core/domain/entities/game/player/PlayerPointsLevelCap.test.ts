@@ -47,6 +47,7 @@ const makePoints = ({ level = 1, experience = 0 }: { level?: number; experience?
             attackPerIqPoint: 1,
             baseAttackSpeed: 100,
             baseMovementSpeed: 100,
+            baseCastingSpeed: 100,
         } as any,
         {
             config: {

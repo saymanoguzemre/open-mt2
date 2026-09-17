@@ -40,6 +40,7 @@ const makePoints = (overrides: Record<string, unknown> = {}) => {
             attackPerIqPoint: 1,
             baseAttackSpeed: 100,
             baseMovementSpeed: 100,
+            baseCastingSpeed: 100,
             ...overrides,
         } as any,
         {

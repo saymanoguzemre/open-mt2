@@ -17,6 +17,7 @@ describe('PlayerFactory', () => {
     let questManager: any = {};
     const eventTimerManager: any = {};
     const mobManager: any = {};
+    const skillManager: any = {};
 
     beforeEach(() => {
         config = {
@@ -42,6 +43,7 @@ describe('PlayerFactory', () => {
                         mpPerIqPoint: 1,
                         initialAttackSpeed: 1.0,
                         initialMovementSpeed: 1.0,
+                        initialCastingSpeed: 1.0,
                     },
                 },
             },
@@ -92,6 +94,7 @@ describe('PlayerFactory', () => {
             questManager,
             eventTimerManager,
             mobManager,
+            skillManager,
         });
 
         expect(player).to.be.an.instanceof(Player);
@@ -150,6 +153,7 @@ describe('PlayerFactory', () => {
             questManager,
             eventTimerManager,
             mobManager,
+            skillManager,
         });
 
         expect(player).to.be.an.instanceof(Player);

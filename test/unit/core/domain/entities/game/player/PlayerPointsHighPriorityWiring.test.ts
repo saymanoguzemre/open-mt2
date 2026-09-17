@@ -53,8 +53,19 @@ const makePoints = () => {
 describe('PlayerPoints previously-unwired high priority points', () => {
     // These used to be no-ops: the class had the field + constructor plumbing, but no points.set()
     // registration, so addPoint()/getPoint() silently did nothing for every skill/item targeting one.
+    it('starts CASTING_SPEED at 100 so skill cooldowns are not doubled by calcDuration', () => {
+        const points = makePoints();
+
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(100);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, 25);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(125);
+
+        points.addPoint(PointsEnum.CASTING_SPEED, -10);
+        expect(points.getPoint(PointsEnum.CASTING_SPEED)).to.equal(115);
+    });
+
     const simplePoints: Array<PointsEnum> = [
-        PointsEnum.CASTING_SPEED,
         PointsEnum.BOW_DISTANCE,
         PointsEnum.ATTBONUS_HUMAN,
         PointsEnum.ATTBONUS_ANIMAL,

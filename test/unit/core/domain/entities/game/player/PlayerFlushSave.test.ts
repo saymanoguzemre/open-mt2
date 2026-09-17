@@ -22,6 +22,7 @@ const createPlayer = (saveResults: Array<PromiseSettledResult<unknown>> = []) =>
                     mpPerIqPoint: 0,
                     initialAttackSpeed: 100,
                     initialMovementSpeed: 100,
+                    initialCastingSpeed: 100,
                 },
             },
         },
@@ -68,6 +69,7 @@ const createPlayer = (saveResults: Array<PromiseSettledResult<unknown>> = []) =>
             questManager: { onDespawn: () => {} } as any,
             eventTimerManager: { removeTimer: () => {}, removeAllTimersFromOwner: () => {} } as any,
             mobManager: {} as any,
+            skillManager: {} as any,
         },
     );
 

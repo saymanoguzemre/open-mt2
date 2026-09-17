@@ -26,6 +26,7 @@ const config: any = {
                 mpPerIqPoint: 0,
                 initialAttackSpeed: 100,
                 initialMovementSpeed: 100,
+                initialCastingSpeed: 100,
                 defensePerHtPoint: 1,
                 attackPerDXPoint: 1,
                 attackPerIQPoint: 1,

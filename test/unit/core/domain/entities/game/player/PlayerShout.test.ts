@@ -30,6 +30,7 @@ const createPlayer = () => {
                     mpPerIqPoint: 1,
                     initialAttackSpeed: 100,
                     initialMovementSpeed: 100,
+                    initialCastingSpeed: 100,
                 },
             },
         },
@@ -73,6 +74,7 @@ const createPlayer = () => {
             questManager: {} as any,
             eventTimerManager: {} as any,
             mobManager: {} as any,
+            skillManager: {} as any,
         },
     );
 };
