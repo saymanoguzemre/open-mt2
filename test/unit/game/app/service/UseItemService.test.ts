@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { ChatMessageTypeEnum } from '@/core/enum/ChatMessageTypeEnum';
 import { ItemTypeEnum } from '@/core/enum/ItemTypeEnum';
+import { ItemUseSubTypeEnum } from '@/core/enum/ItemUseSubTypeEnum';
 import { SkillEnum } from '@/core/enum/SkillEnum';
 import { WindowTypeEnum } from '@/core/enum/WindowTypeEnum';
 import WinstonLoggerAdapter from '@/core/infra/logger/WinstonLoggerAdapter';
@@ -11,6 +12,7 @@ describe('UseItemService', () => {
     let loggerStub;
     let itemManagerStub;
     let mobManagerStub;
+    let potionServiceStub;
     let service: UseItemService;
     let playerStub;
 
@@ -18,10 +20,15 @@ describe('UseItemService', () => {
         loggerStub = sinon.createStubInstance(WinstonLoggerAdapter);
         itemManagerStub = { update: sinon.stub().resolves() };
         mobManagerStub = { hasMob: sinon.stub().resolves() };
+        potionServiceStub = {
+            handles: sinon.stub().returns(false),
+            execute: sinon.stub().resolves(true),
+        };
         service = new UseItemService({
             logger: loggerStub,
             itemManager: itemManagerStub,
             mobManager: mobManagerStub,
+            potionService: potionServiceStub,
         });
         playerStub = {
             getItem: sinon.stub(),
@@ -279,6 +286,42 @@ describe('UseItemService', () => {
             expect(skillNum).to.equal(SkillEnum.THREE_WAY_CUT);
             expect(deadline).to.be.at.least(NOW_SECONDS + EIGHTEEN_HOURS);
             expect(deadline).to.be.at.most(NOW_SECONDS + THIRTY_HOURS);
+        });
+    });
+
+    describe('potion dispatch', () => {
+        it('should delegate USE_POTION items to potionService', async () => {
+            const mockItem = {
+                getType: sinon.stub().returns(ItemTypeEnum.ITEM_USE),
+                getSubType: sinon.stub().returns(ItemUseSubTypeEnum.USE_POTION),
+            };
+            playerStub.getItem.returns(mockItem);
+            playerStub.isWearable.returns(false);
+            playerStub.getEquipFailureReason.returns(undefined);
+            potionServiceStub.handles.returns(true);
+
+            await service.execute(playerStub, WindowTypeEnum.INVENTORY, 2);
+
+            expect(potionServiceStub.handles.calledOnceWith(ItemUseSubTypeEnum.USE_POTION)).to.be.true;
+            expect(potionServiceStub.execute.calledOnceWith(playerStub, mockItem)).to.be.true;
+            expect(loggerStub.info.notCalled).to.be.true;
+        });
+
+        it('should delegate USE_ABILITY_UP items to potionService', async () => {
+            const mockItem = {
+                getType: sinon.stub().returns(ItemTypeEnum.ITEM_USE),
+                getSubType: sinon.stub().returns(ItemUseSubTypeEnum.USE_ABILITY_UP),
+            };
+            playerStub.getItem.returns(mockItem);
+            playerStub.isWearable.returns(false);
+            playerStub.getEquipFailureReason.returns(undefined);
+            potionServiceStub.handles.returns(true);
+
+            await service.execute(playerStub, WindowTypeEnum.INVENTORY, 2);
+
+            expect(potionServiceStub.handles.calledOnceWith(ItemUseSubTypeEnum.USE_ABILITY_UP)).to.be.true;
+            expect(potionServiceStub.execute.calledOnceWith(playerStub, mockItem)).to.be.true;
+            expect(loggerStub.info.notCalled).to.be.true;
         });
     });
 });

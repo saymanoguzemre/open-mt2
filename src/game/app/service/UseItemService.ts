@@ -9,12 +9,12 @@ import { ItemTypeEnum } from '@/core/enum/ItemTypeEnum';
 import { ItemUseSubTypeEnum } from '@/core/enum/ItemUseSubTypeEnum';
 import { PointsEnum } from '@/core/enum/PointsEnum';
 import { SkillEnum } from '@/core/enum/SkillEnum';
-import { SpecialEffectTypeEnum } from '@/core/enum/SpecialEffectTypeEnum';
 import { SpecialItemEnum } from '@/core/enum/SpecialItemEnum';
 import { TimedEventsEnum } from '@/core/enum/TimedEventsEnum';
 import { WindowTypeEnum } from '@/core/enum/WindowTypeEnum';
 import Logger from '@/core/infra/logger/Logger';
 import { SKILLBOOK_DELAY_MAX, SKILLBOOK_DELAY_MIN } from '@/core/util/Constants';
+import PotionService from './potion/PotionService';
 
 // Horse item vnums from unique_item.h
 // Feed items restore 1 HP to a living horse.
@@ -93,19 +93,23 @@ export default class UseItemService {
     private readonly logger: Logger;
     private readonly itemManager: ItemManager;
     private readonly mobManager: MobManager;
+    private readonly potionService: PotionService;
 
     constructor({
         logger,
         itemManager,
         mobManager,
+        potionService,
     }: {
         logger: Logger;
         itemManager: ItemManager;
         mobManager: MobManager;
+        potionService: PotionService;
     }) {
         this.logger = logger;
         this.itemManager = itemManager;
         this.mobManager = mobManager;
+        this.potionService = potionService;
     }
 
     async execute(player: Player, window: number, position: number) {
@@ -244,29 +248,14 @@ export default class UseItemService {
     }
 
     private async useItemUsable(player: Player, item: Item) {
-        switch (item.getSubType()) {
+        const subType = item.getSubType();
+        if (this.potionService.handles(subType)) {
+            return this.potionService.execute(player, item);
+        }
+
+        switch (subType) {
             case ItemUseSubTypeEnum.USE_SPECIAL:
                 return this.useSpecialItem(player, item);
-            case ItemUseSubTypeEnum.USE_POTION:
-                {
-                    if (item.getCount() <= 0) {
-                        this.logger.debug(
-                            `[UseItemService] Item count invalid, this should never happen, playerId: ${player.getId()}, playerName: ${player.getName()}`,
-                        );
-                        return;
-                    }
-
-                    const isMpPotion = item.getValues()[1] > 0;
-                    if (isMpPotion) {
-                        return await this.useManaPotion(player, item);
-                    }
-                    const isHpPotion = item.getValues()[0] > 0;
-                    if (isHpPotion) {
-                        return await this.useHealthPotion(player, item);
-                    }
-                }
-                break;
-
             default:
                 this.logger.info(
                     `[UseItemService] unhandled item use - vnum: ${item.getId()}, type: ${item.getType()}, subType: ${item.getSubType()}, player: ${player.getName()}`,
@@ -414,73 +403,6 @@ export default class UseItemService {
         player.sendItemUpdate(item);
         await this.itemManager.update(item);
         return true;
-    }
-
-    private async useManaPotion(player: Player, item: Item) {
-        const hasUsedPotionUntilMaxMana =
-            player.getPoint(PointsEnum.MANA_RECOVERY) + player.getPoint(PointsEnum.MANA) >=
-            player.getPoint(PointsEnum.MAX_MANA);
-        if (hasUsedPotionUntilMaxMana) return;
-
-        const amount = (item.getValues()[1] * Math.min(200, 100 + player.getPoint(PointsEnum.POTION_BONUS))) / 100;
-        player.addPoint(PointsEnum.MANA_RECOVERY, amount);
-        player.sendSpecialEffect(SpecialEffectTypeEnum.SP_UP_BLUE);
-
-        await this.removeItemByQuantity(player, item, 1);
-
-        if (player.isEventTimerActive(TimedEventsEnum.MANA_POTION)) return;
-
-        player.addEventTimer({
-            id: TimedEventsEnum.MANA_POTION,
-            eventFunction: () => {
-                const manaIsFull = player.getPoint(PointsEnum.MANA) >= player.getPoint(PointsEnum.MAX_MANA);
-                if (manaIsFull) return;
-
-                const amount = player.getPoint(PointsEnum.MANA_RECOVERY);
-
-                if (amount <= 0) return;
-
-                player.addPoint(PointsEnum.MANA, amount);
-                player.addPoint(PointsEnum.MANA_RECOVERY, -amount);
-            },
-            options: {
-                interval: 1_000,
-                duration: 1_000,
-            },
-        });
-    }
-
-    private async useHealthPotion(player: Player, item: Item) {
-        const hasUsedPotionUntilMaxMana =
-            player.getPoint(PointsEnum.HP_RECOVERY) + player.getPoint(PointsEnum.HEALTH) >=
-            player.getPoint(PointsEnum.MAX_HEALTH);
-        if (hasUsedPotionUntilMaxMana) return;
-
-        const amount = (item.getValues()[0] * Math.min(200, 100 + player.getPoint(PointsEnum.POTION_BONUS))) / 100;
-        player.addPoint(PointsEnum.HP_RECOVERY, amount);
-        player.sendSpecialEffect(SpecialEffectTypeEnum.HP_UP_RED);
-        await this.removeItemByQuantity(player, item, 1);
-
-        if (player.isEventTimerActive(TimedEventsEnum.HEALTH_POTION)) return;
-
-        player.addEventTimer({
-            id: TimedEventsEnum.HEALTH_POTION,
-            eventFunction: () => {
-                const healthIsFull = player.getPoint(PointsEnum.HEALTH) >= player.getPoint(PointsEnum.MAX_HEALTH);
-                if (healthIsFull) return;
-
-                const amount = player.getPoint(PointsEnum.HP_RECOVERY);
-
-                if (amount <= 0) return;
-
-                player.addPoint(PointsEnum.HEALTH, amount);
-                player.addPoint(PointsEnum.HP_RECOVERY, -amount);
-            },
-            options: {
-                interval: 1_000,
-                duration: 1_000,
-            },
-        });
     }
 
     private async useSkillBook(player: Player, item: Item) {

@@ -27,6 +27,9 @@ import PickupItemService from './app/service/PickupItemService';
 import SelectCharacterService from './app/service/SelectCharacterService';
 import SelectEmpireService from './app/service/SelectEmpireService';
 import UseItemService from './app/service/UseItemService';
+import HealthManaPotionHandler from './app/service/potion/HealthManaPotionHandler';
+import AbilityUpPotionHandler from './app/service/potion/AbilityUpPotionHandler';
+import PotionService from './app/service/potion/PotionService';
 import Commands from './domain/command/Commands';
 import AuthenticateService from './domain/service/AuthenticateService';
 import LeaveGameService from './domain/service/LeaveGameService';
@@ -82,6 +85,9 @@ container.register({
     mobManager: asClass(MobManager).singleton(),
     itemManager: asClass(ItemManager).singleton(),
     moveItemService: asClass(MoveItemService).singleton(),
+    healthManaPotionHandler: asClass(HealthManaPotionHandler).singleton(),
+    abilityUpPotionHandler: asClass(AbilityUpPotionHandler).singleton(),
+    potionService: asClass(PotionService).singleton(),
     useItemService: asClass(UseItemService).singleton(),
     pickupItemService: asClass(PickupItemService).singleton(),
     dropItemService: asClass(DropItemService).singleton(),

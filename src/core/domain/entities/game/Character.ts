@@ -270,9 +270,20 @@ export default abstract class Character extends GameEntity {
         AffectBitsTypeEnum.TERROR,
     ];
 
+    private static readonly GOOD_AFFECT_NONE_POINTS: readonly PointsEnum[] = [
+        PointsEnum.ST,
+        PointsEnum.DX,
+        PointsEnum.HT,
+        PointsEnum.IQ,
+    ];
+
     removeGoodAffects() {
         for (const flag of Character.GOOD_AFFECT_FLAGS) {
             this.removeAffect(flag);
+        }
+
+        for (const point of Character.GOOD_AFFECT_NONE_POINTS) {
+            this.removeAffect(AffectBitsTypeEnum.NONE, Character.affectEventId(AffectBitsTypeEnum.NONE, point));
         }
     }
 
