@@ -99,6 +99,9 @@ In this implementation we are using custom commands, described bellow:
 - **/gold**
     - Description: add gold to other player or to yourself.
     - Example: /gold <number> <targetName>
+- **/yang**
+    - Description: add yang to other player or to yourself.
+    - Example: /yang <number> <targetName>
 - **/goto**
     - Description: teleports you to a <area>, <player> or <location:x,y>.
     - Example: /goto <area, player, location> <areaName, targetName, <x, y>>

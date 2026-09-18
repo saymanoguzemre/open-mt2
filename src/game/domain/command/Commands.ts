@@ -27,6 +27,8 @@ import ExperienceCommand from './command/exp/ExperienceCommand';
 import ExperienceCommandHandler from './command/exp/ExperienceCommandHandler';
 import GoldCommand from './command/gold/GoldCommand';
 import GoldCommandHandler from './command/gold/GoldCommandHandler';
+import YangCommand from './command/yang/YangCommand';
+import YangCommandHandler from './command/yang/YangCommandHandler';
 import GotoCommand from './command/goto/GotoCommand';
 import GotoCommandHandler from './command/goto/GotoCommandHandler';
 import InvokeCommand from './command/invoke/InvokeCommand';
@@ -125,6 +127,13 @@ export default function createCommands() {
             {
                 command: GoldCommand,
                 createHandler: (params) => new GoldCommandHandler(params),
+            },
+        ],
+        [
+            YangCommand.getName(),
+            {
+                command: YangCommand,
+                createHandler: (params) => new YangCommandHandler(params),
             },
         ],
         [
