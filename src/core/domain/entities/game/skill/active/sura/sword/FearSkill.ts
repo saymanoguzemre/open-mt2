@@ -18,7 +18,7 @@ export class FearSkill extends ActiveSkill {
     public readonly range: number = 0;
     public readonly maxHit: number = 1;
     public readonly damageType: SkillDamageTypeEnum = SkillDamageTypeEnum.NORMAL;
-    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY, SkillFlagsEnum.TOGGLE]);
+    public readonly flags: Set<SkillFlagsEnum> = new Set([SkillFlagsEnum.SELFONLY]);
     public readonly affects: Set<SkillAffectEnum> = new Set([SkillAffectEnum.TERROR]);
     public readonly applies: Set<SkillApplies> = new Set([
         {
@@ -34,7 +34,7 @@ export class FearSkill extends ActiveSkill {
     }
 
     calculateCooldown(): number {
-        return 0;
+        return 100;
     }
 
     calculateManaCost(context: SkillCalcContext): number {
